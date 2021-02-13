@@ -1,0 +1,72 @@
+<html> 
+<head>
+    <style>
+        table, th, td {
+          border: 1px solid black;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("form").submit(function(e){
+                e.preventDefault();
+                var data = { 
+                    "email": $('#email').val(), 
+                    "password": $('#pwd').val() 
+                };
+                alert(data.email);
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    url: '/users/login',
+                    data: data,
+                    dataType: "json",
+                    success: function (obj) { 
+                        alert('success-'+obj.data)
+                        var status = obj.status;
+                        if(status){
+                            $(".formc").hide(); 
+                            var content = "<table>";
+                            $.each(obj.data, function(key, value) {
+                                alert(key);
+                                content += '<tr><td>'+key+': </td><td>'+value+'</td></tr>';
+                            });
+                            content += "</table>";
+                            /*for(var key in obj.user) {
+                                alert(key);
+                                // if it's not something from the prototype
+                                if(obj.user.hasOwnProperty(key)) {
+                                    alert(key);
+                                    content += '<tr><td>' + key +  '</td><td>'+obj.user[key]+'</td></tr>';
+                                }
+                                content += "</table>";
+                            } */
+                            alert(content);
+                            $("#sdiv").append(content);
+                        } else {
+                            $("#fdiv").append('<p>'+obj.message+'</p>').show();
+                            $("#ldiv").show();
+                        }   
+                    },
+                    error: function (err){ 
+                        //alert('error---'+err.responseText)
+                        $("#fdiv").append('<p>'+err+'</p>').show();
+                    }
+                });
+            });
+        });
+    </script>
+</head> 
+<body>  
+<!--<form action="/users/login" method="POST"> --> 
+<form class='formc' action="#" method="POST">
+Email:&nbsp;&nbsp;<input type="text" id="email" name="email" maxlength="30" required><br /><br />    
+Paswword:&nbsp;<input type="password" id="pwd" name="password" maxlength="15" required><br /><br /> 
+<input id="sbtn" type="submit" value="Login">  
+</form>
+</body>
+<div id="fdiv"  style="display:none"></div>
+<div class="formc" id="ldiv" style="display:none"><p >Don't have an account? <a href="/register">SignUp</a></p></div>
+<div id="sdiv"></div>  
+</html>  
