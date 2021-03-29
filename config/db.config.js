@@ -1,18 +1,21 @@
 'use strict';
-const mysql = require('mysql');
-//local mysql db connection
-const dbConn = mysql.createConnection({
-    host: 'database-1.chk9qijt1q1u.us-east-2.rds.amazonaws.com',
-    port:  '3306',
-    user: 'admin',
-    password: 'anushaputta',
-    database: 'nodeapp',
-    multipleStatements: true
-});
+const sql = require('mssql');
 
-dbConn.connect(function(err) {
-  if (err) throw err;
-  console.log("Database Connected!");
-});
+const config = {
+  server: 'nimbussqlserver.database.windows.net',
+  user: 'nimbus',
+  password: 'Nmbs2021',
+  database: 'nimbussqldb'
+};
 
-module.exports = dbConn;
+const poolPromise = new sql.ConnectionPool(config)
+  .connect()
+  .then(pool => {
+    console.log('Connected to MSSQL')
+    return pool
+  })
+  .catch(err => console.log('Database Connection Failed! Bad Config: ', err));
+
+module.exports = {
+  sql, poolPromise
+};
